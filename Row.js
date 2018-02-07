@@ -6,16 +6,16 @@ const Row = (props) => (
   <View style={styles.container}>
       <SwipeRow disableLeftSwipe={!props.incart?true:false}
         disableRightSwipe={props.incart?true:false}
-        leftOpenValue={90} rightOpenValue={-90}>
+        leftOpenValue={45} rightOpenValue={-45}>
         <View style={styles.rowBack}>
-              <Image source={require('./img/cart.png')} style={styles.photo} />
-              <Image source={require('./img/home.png')} style={styles.photo} />
+              <Image source={require('./img/cart.png')}/>
+              <Image source={require('./img/home.png')}/>
         </View>
         <View style={props.incart?styles.rowLeft:styles.rowRight}>
           <View style={styles.inRow}>
               <Image source={props.incart?require('./img/cart.png'):null} />
-              <View>
-                <Text style={{padding: 30,textAlign: 'left',fontSize: 20}}>{`${props.item}`}</Text>
+              <View style={{flex: 1}}>
+                <Text style={{padding: 10, fontSize: 18}}>{`${props.item}`}</Text>
               </View>
               <Image source={!props.incart?require('./img/home.png'):null} />
           </View>
@@ -33,19 +33,16 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: 'flex-end',
     backgroundColor: '#fff',
-    justifyContent: 'center',
-    height: 90,
+    height: 45,
   },
   rowLeft: {
     alignItems: 'flex-start',
     backgroundColor: '#fff',
-    justifyContent: 'center',
-    height: 90,
+    height: 45,
   },
-
   inRow: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   rowBack: {
     alignItems: 'center',

@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, Button, View, Image, ActivityIndicator, TouchableHighlight, ListView, Modal, TextInput } from 'react-native';
+import {Text, Button, View, Image, ActivityIndicator, TouchableHighlight, ListView } from 'react-native';
 import Row from './Row';
+import ModalAdd from './ModalAdd';
 import data from './data';
+import styles from './styles';
 
 class App extends React.Component {
 
@@ -11,7 +13,6 @@ class App extends React.Component {
           isLoading: true,
           showList: true,
           modalVisible: false,
-          text:'',
         }
         this.arrayholder = [] ;
       }
@@ -42,7 +43,6 @@ class App extends React.Component {
   }
 
   openEdit() {
-      // update our state to indicate our "maybe" element show be shown
       this.setState({showList: !this.state.showList});
     }
 
@@ -57,15 +57,15 @@ class App extends React.Component {
       );
     }
     return (<View style={styles.container}>
-                  <Image style={{height: 90}} source={require('./img/remove.png')} />
+                  <Image source={require('./img/remove.png')} />
             </View>);
   }
 
   renderAdd() {
     if (!this.state.showList) {
       return (
-        <TouchableHighlight onPress={() => this.openModal()}>
-          <Image style={{flex:1,height: 90}} source={require('./img/add.png')} />
+        <TouchableHighlight style={{alignSelf: 'center'}} onPress={() => this.openModal()}>
+          <Text style={{fontSize: 30,fontWeight: 'bold', paddingLeft: 20}}>+</Text>
         </TouchableHighlight>
       );
     }
@@ -76,7 +76,7 @@ class App extends React.Component {
     if (this.state.showList) {
       return (
         <TouchableHighlight onPress={()=> this.openEdit()}>
-          <Image style={{flex:1,height: 90}} source={require('./img/edit.png')} />
+          <Image style={{flex:1}} source={require('./img/edit.png')} />
         </TouchableHighlight>
       );
     }
@@ -90,11 +90,6 @@ class App extends React.Component {
   openModal() {
     this.setState({modalVisible:true});
   }
-
-  closeModal() {
-    this.setState({modalVisible:false});
-  }
-
 
   render() {
     if (this.state.isLoading) {
@@ -121,66 +116,13 @@ class App extends React.Component {
             <Image  source={!this.state.incart?require('./img/cart_black.png'):require('./img/cart.png')} />
           </TouchableHighlight>
         </View>
-        <Modal
-              visible={this.state.modalVisible}
-              animationType={'slide'}
-              onRequestClose={() => this.closeModal()}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.innerContainer}>
-                      <View style={styles.header}>
-                          <TouchableHighlight style={{alignSelf: 'center'}} onPress={() => this.closeModal()}>
-                            <Text style={{fontSize: 20, fontWeight: 'bold', paddingLeft: 8}}>Cancel</Text>
-                          </TouchableHighlight>
-
-                            <Text style={{flex: 4,alignSelf: 'center',textAlign: 'center',fontSize: 20}}>Groceries</Text>
-                            <TouchableHighlight style={{alignSelf: 'center'}} onPress={() => this.closeModal()}>
-                              <Text style={{fontSize: 20 ,fontWeight: 'bold', paddingRight: 8}}>Done</Text>
-                            </TouchableHighlight>
-                      </View>
-                        <Text style={{fontSize: 20}}>Add new list item</Text>
-                        <TextInput
-                          maxLength = {27}
-                          style={{height: 40, alignSelf: 'stretch',fontSize: 20, borderColor: 'gray', borderWidth: 1}}
-                          onChangeText={(text) => this.setState({text})}
-                          value={this.state.text}
-                      />
-                      <Text style={{fontSize: 20}}>
-                         Characters Left: {this.state.text.length}/27
-                      </Text>
-                </View>
-            </View>
-          </Modal>
+        <ModalAdd closeModal={()=>this.setState({modalVisible: false})}
+          modalVisible={this.state.modalVisible}
+          />
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 90,
-    backgroundColor: '#f9f9f9',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 90,
-    backgroundColor: '#f9f9f9',
-  },
 
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'grey',
-  },
-  innerContainer: {
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-});
 export default App;
