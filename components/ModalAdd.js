@@ -7,13 +7,21 @@ import {
   Text,
   StyleSheet , Modal, TextInput, TouchableHighlight
 } from 'react-native';
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
-export default class ModalAdd extends React.Component {
+class ModalAdd extends React.Component {
   constructor(props) {
         super(props);
         this.state = {
           text:'',
         }
+        this.handleCreateItem = this.handleCreateItem.bind(this);
+      }
+
+      handleCreateItem() {
+          this.props.dispatch({ type: "ADD_ITEM", ...{ item: this.state.text, incart: false}});
+          this.props.closeModal();
       }
 
   render() {
@@ -30,7 +38,7 @@ export default class ModalAdd extends React.Component {
                         <Text style={{fontSize: 20, fontWeight: 'bold', paddingLeft: 8}}>Cancel</Text>
                       </TouchableHighlight>
                       <Text style={{flex: 4,alignSelf: 'center',textAlign: 'center',fontSize: 20}}>Groceries</Text>
-                      <TouchableHighlight style={{alignSelf: 'center'}} onPress={this.props.closeModal}>
+                      <TouchableHighlight style={{alignSelf: 'center'}} onPress={() => this.handleCreateItem()}>
                         <Text style={{fontSize: 20 ,fontWeight: 'bold', paddingRight: 8}}>Done</Text>
                       </TouchableHighlight>
                     </View>
@@ -50,7 +58,9 @@ export default class ModalAdd extends React.Component {
     );
   }
 }
-
+ModalAdd.propTypes = {
+  dispatch: PropTypes.func
+};
 const localStyles = StyleSheet.create({
   modalContainer: {
     flex: 1,
@@ -61,3 +71,5 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default connect()(ModalAdd);

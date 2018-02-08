@@ -1,8 +1,8 @@
 // Start the sequence of item ID's at 0
 let nextItemId = 0;
 const defaultState = [
-    { id: '1', name: 'First Item', "bgColor": "#333333" },
-    { id: '2', name: 'Second Item', "bgColor": "#33aa33" }
+    { id: '1', item: 'Milk 1l', 'incart': false },
+    { id: '2', item: 'Eggs Medium 12 pack', 'incart': true}
 ];
 // Items reducer
 const items = (state = defaultState, action) => {
@@ -12,8 +12,8 @@ const items = (state = defaultState, action) => {
         ...state,
         {
           id: nextItemId++,
-          name: action.name,
-          bgColor: action.bgColor
+          item: action.item,
+          incart: action.incart
         }
       ];
     }

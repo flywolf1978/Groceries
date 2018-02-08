@@ -4,35 +4,35 @@ import Row from './Row';
 import ModalAdd from './ModalAdd';
 import data from '../data';
 import styles from '../styles';
-
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import RowEdit from './RowEdit';
 class Main extends React.Component {
 
   constructor(props) {
         super(props);
         this.state = {
           isLoading: true,
-          showList: true,
+          editMode: false,
           modalVisible: false,
         }
         this.arrayholder = [] ;
+        this.handleDestroyItem = this.handleDestroyItem.bind(this);
+        this.filterCart = this.filterCart.bind(this);
       }
 
-  componentDidMount() {
-        let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        this.setState({
-          isLoading: false,
-          dataSource: ds.cloneWithRows(data),
-        }, function() {
-          this.arrayholder = data ;
-        });
-  }
+      handleDestroyItem(id) {
+        this.props.dispatch({ type: "REMOVE_ITEM", id });
 
-  filterIncart(){
+      }
+
+  filterCart(){
     const newData = this.arrayholder.filter(function(item){
         return item.incart
     })
+    dataSource: dataSource.cloneWithRows(newData)
     this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(newData),
+        dataSource: this.props.dataSource.cloneWithRows(newData),
     })
   }
 
@@ -43,26 +43,52 @@ class Main extends React.Component {
   }
 
   openEdit() {
-      this.setState({showList: !this.state.showList});
+      this.setState({editMode: !this.state.editMode});
     }
 
   renderContent() {
-    if (this.state.showList) {
+    if (!this.state.editMode) {
       return (
         <ListView
           style={styles.container}
-          dataSource={this.state.dataSource}
-          renderRow={(data) => <Row {...data} />}
+          enableEmptySections={true}
+          dataSource={this.props.dataSource}
+          renderRow={
+            rowData => {
+            return (
+
+              <Row
+                rowData={rowData}
+                handleDestroyItem={id => this.handleDestroyItem(id)}
+              />
+
+            );
+          }}
         />
-      );
+    );
     }
     return (<View style={styles.container}>
-                  <Image source={require('../img/remove.png')} />
-            </View>);
+      <ListView
+        style={styles.container}
+        enableEmptySections={true}
+        dataSource={this.props.dataSource}
+        renderRow={
+          rowData => {
+          return (
+
+            <RowEdit
+              rowData={rowData}
+              handleDestroyItem={id => this.handleDestroyItem(id)}
+            />
+
+          );
+        }}
+      />
+  </View>);
   }
 
   renderAdd() {
-    if (!this.state.showList) {
+    if (this.state.editMode) {
       return (
         <TouchableHighlight style={{alignSelf: 'center'}} onPress={() => this.openModal()}>
           <Text style={{fontSize: 30,fontWeight: 'bold', paddingLeft: 20}}>+</Text>
@@ -73,7 +99,7 @@ class Main extends React.Component {
   }
 
   renderEdit() {
-    if (this.state.showList) {
+    if (!this.state.editMode) {
       return (
         <TouchableHighlight onPress={()=> this.openEdit()}>
           <Image style={{flex:1}} source={require('../img/edit.png')} />
@@ -92,13 +118,7 @@ class Main extends React.Component {
   }
 
   render() {
-    if (this.state.isLoading) {
-      return (
-        <View style={{flex: 1, paddingTop: 20}}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
+
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -106,17 +126,16 @@ class Main extends React.Component {
           <Text style={{flex: 4,alignSelf: 'center',textAlign: 'center',fontSize: 20}}>Groceries</Text>
           {this.renderEdit()}
         </View>
-          {this.renderContent()}
-
+        {this.renderContent()}
         <View style={styles.footer}>
           <TouchableHighlight onPress={() => this.getAll()}>
             <Image source={require('../img/swipe.png')} />
           </TouchableHighlight>
-          <TouchableHighlight onPress={() => this.filterIncart()}>
+          <TouchableHighlight onPress={() => this.filterCart()}>
             <Image  source={!this.state.incart?require('../img/cart_black.png'):require('../img/cart.png')} />
           </TouchableHighlight>
         </View>
-        <ModalAdd closeModal={()=>this.setState({modalVisible: false})}
+        <ModalAdd  closeModal={()=>this.setState({modalVisible: false})}
           modalVisible={this.state.modalVisible}
           />
       </View>
@@ -124,5 +143,19 @@ class Main extends React.Component {
   }
 }
 
+const dataSource = new ListView.DataSource({
+  rowHasChanged: (r1, r2) => r1 !== r2
+});
 
-export default Main;
+function mapStateToProps(state, props) {
+    return {
+      //  loading: state.dataReducer.loading,
+      dataSource: dataSource.cloneWithRows(state.items)
+    }
+}
+
+Main.propTypes = {
+  dataSource: PropTypes.object,
+  dispatch: PropTypes.func
+};
+export default  connect(mapStateToProps)(Main);
